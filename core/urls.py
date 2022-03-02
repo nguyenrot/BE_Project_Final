@@ -21,9 +21,9 @@ from drf_yasg import openapi
 
 shema_view = get_schema_view(
     openapi.Info(
-        title="E-Course Api",
+        title="Project Final",
         default_version="v1",
-        description="APIs for CourseApp",
+        description="APIs for Project Final",
         contact=openapi.Contact(email="phamkynguyen753@gmail.com"),
         license=openapi.License(name="BSD License"),
     ),
