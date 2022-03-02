@@ -88,8 +88,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'djongo',
         'CLIENT': {
-            'host': 'mongodb+srv://nguyen:vrb7mwO0VqVz6fSE@cluster.wjhsk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-            'name': 'final',
+            'host': env('DB_HOST'),
+            'name': env('DB_NAME'),
             'authMechanism': 'SCRAM-SHA-1'
         }
     }
@@ -118,7 +118,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 
 USE_I18N = True
 
