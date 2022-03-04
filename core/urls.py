@@ -32,6 +32,8 @@ shema_view = get_schema_view(
 )
 
 urlpatterns = [
+    re_path(r'admin/', admin.site.urls),
+    re_path(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     re_path(r'^(?P<format>\.json|\.yaml)$', shema_view.without_ui(cache_timeout=0), name='schema-json'),
     re_path(r'', shema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
     re_path(r'', shema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
