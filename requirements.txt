@@ -47,3 +47,5 @@ uritemplate==4.1.1
 urllib3==1.26.8
 whitenoise==6.0.0
 wrapt==1.13.3
+PyJWT==1.7.1
+drf-jwt==1.19.0

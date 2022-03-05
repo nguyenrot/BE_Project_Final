@@ -12,6 +12,12 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os.path
 from pathlib import Path
 import environ
+from api_oauth2.utils import signed_token_generator
+from posixpath import join
+from api_oauth2.scopes import (
+    primary_scopes,
+    default_scopes,
+)
 
 env = environ.Env(
     # set casting, default value
@@ -47,6 +53,10 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'oauth2_provider',
+    'api_oauth2',
+    'api_base',
+    'api_authservices',
+    'api_users',
 ]
 
 MIDDLEWARE = [
@@ -64,6 +74,78 @@ MIDDLEWARE = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 ROOT_URLCONF = 'core.urls'
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Bearer': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+        }
+    }
+}
+
+API_HOST = env("API_HOST")
+API_PORT = env("API_PORT")
+OAUTH_SCHEME = "http" if API_HOST in ["127.0.0.1", "localhost"] else "https"
+OAUTH_PORT = ":" + API_PORT if API_PORT is not None else ""
+OAUTH_URL = OAUTH_SCHEME + "://" + API_HOST + OAUTH_PORT
+
+# config oauth2
+PRIVATE_KEY_FILE = env("PRIVATE_KEY_FILE", default="jwt")
+PRIVATE_KEY_PATH = join(BASE_DIR, PRIVATE_KEY_FILE)
+with open(PRIVATE_KEY_PATH) as f:
+    PRIVATE_PEM = f.read()
+with open(PRIVATE_KEY_PATH + ".pub") as f:
+    PUBLIC_KEY = f.read()
+
+SCOPES = primary_scopes
+DEFAULT_SCOPES = default_scopes
+DEFAULT_SCOPES = {key: DEFAULT_SCOPES[key]
+                  for key in DEFAULT_SCOPES if key in SCOPES}
+
+OAUTH2_PROVIDER = {
+    "ACCESS_TOKEN_EXPIRE_SECONDS": 3600,
+    "ACCESS_TOKEN_GENERATOR": signed_token_generator(PRIVATE_PEM, issuer="damelagi"),
+    "REFRESH_TOKEN_GENERATOR": "oauthlib.oauth2.rfc6749.tokens.random_token_generator",
+    "OAUTH2_VALIDATOR_CLASS": "api_oauth2.pre_configured.CustomOAuth2Validator",
+    "ROTATE_REFRESH_TOKEN": True,
+    "REFRESH_TOKEN_GRACE_PERIOD_SECONDS": 4000,
+    "SCOPES": SCOPES,
+    "DEFAULT_SCOPES": DEFAULT_SCOPES,
+}
+
+# Application config
+APP_NAME = env.str("APP_NAME")
+SUPER_ADMIN_EMAIL = env.str("SUPER_ADMIN_EMAIL")
+SUPER_ADMIN_PASSWORD = env.str("SUPER_ADMIN_PASSWORD")
+NBF_TIME = 0
+DEFAULT_CLIENT_SECRET = env("CLIENT_SECRET")
+DEFAULT_CLIENT_ID = env("CLIENT_ID")
+
+OAUTH2_PROVIDER_ACCESS_TOKEN_MODEL = "api_oauth2.AccessToken"
+OAUTH2_PROVIDER_APPLICATION_MODEL = "api_oauth2.Application"
+OAUTH2_PROVIDER_REFRESH_TOKEN_MODEL = "api_oauth2.RefreshToken"
+OAUTH2_PROVIDER_GRANT_MODEL = "api_oauth2.Grant"
+OAUTH2_PROVIDER_ID_TOKEN_MODEL = "api_oauth2.IDToken"
+
+AUTHENTICATION_BACKENDS = (
+    "oauth2_provider.backends.OAuth2Backend",
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+# Config Django Rest framework
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": [
+        "api_oauth2.permissions.oauth2_permissions.TokenHasActionScope"
+    ],
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "api_base.pagination.CustomPagination",
+    "PAGE_SIZE": 12,
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+}
 
 TEMPLATES = [
     {
@@ -114,6 +196,8 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = 'api_users.User'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
