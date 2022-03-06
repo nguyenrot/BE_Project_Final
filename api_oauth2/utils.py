@@ -82,13 +82,12 @@ def signed_token_generator(private_pem, **kwargs):
                 )
             )
             scopes = scopes.union(default_scopes)
-
         # limit request scopes
-        if all.issubset(scopes):
-            scopes = client_scopes
-        valid_scopes = scopes.intersection(client_scopes)
-
-        request.scope = list(valid_scopes)
+        # if all.issubset(scopes):
+        #     scopes = client_scopes
+        # valid_scopes = scopes.intersection(client_scopes)
+        # request.scope = list(client_scopes)
+        request.scope = list(scopes)
         request.claims = kwargs
 
         request.claims.update(
@@ -99,7 +98,8 @@ def signed_token_generator(private_pem, **kwargs):
                 "nbf": now + timezone.timedelta(seconds=float(NBF_TIME)),
             },
         )
-        request.scopes = list(valid_scopes)
+        # request.scopes = list(client_scopes)
+        request.scopes = list(scopes)
         return generate_signed_token(private_pem, request)
 
     return signed_token_generator

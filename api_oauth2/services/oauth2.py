@@ -12,7 +12,6 @@ class AuthorizationOauth2:
     @classmethod
     def authorization_oauth2(cls, username, password=None, token=None):
         url = OAUTH_URL + "/api/o/token/"
-        print(url)
         payload = {
             "client_type": "confidential",
             "grant_type": "password",

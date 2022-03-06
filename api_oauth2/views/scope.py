@@ -7,7 +7,7 @@ from core.settings import SCOPES
 
 class ScopeView(BaseViewSet):
     required_alternate_scopes = {
-        "retrieve_all_scopes": [["role:view"]],
+        "retrieve_all_scopes": [["employee"], ["admin"]],
     }
 
     @action(detail=False, methods=["GET"])
