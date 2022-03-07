@@ -1,0 +1,1 @@
+from api_departments.serializers.department import DepartmentSerializer

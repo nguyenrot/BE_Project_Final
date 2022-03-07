@@ -1,3 +1,3 @@
 primary_scopes = {
-    "admin": "Admin",
+    "admin": "super_admin",
 }

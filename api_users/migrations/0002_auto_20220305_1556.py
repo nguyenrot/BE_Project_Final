@@ -12,7 +12,7 @@ def add_user(apps, schema_editor):
     admin_role, created = Role.objects.get_or_create(
         name="Super Administrator",
         description="Unlimited resources access.",
-        scope="__all__",
+        scope="super_admin",
     )
 
     exist_user = User.objects.filter(username=SUPER_ADMIN_EMAIL).exists()
