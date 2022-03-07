@@ -11,4 +11,4 @@ class Role(models.Model):
         return self.name
 
     class Meta:
-        db_table = "ac_roles"
+        db_table = "roles"
