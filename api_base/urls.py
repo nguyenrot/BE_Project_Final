@@ -4,6 +4,7 @@ v1_patterns = [
     path("auth/", include("api_authservices.urls")),
     path("users/", include("api_users.urls")),
     path("department/", include(("api_departments.urls"))),
+    path("office/", include(("api_offices.urls"))),
     re_path(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
 
