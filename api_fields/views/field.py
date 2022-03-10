@@ -1,11 +1,10 @@
 from rest_framework import viewsets
-from api_offices.models import Office, Group
-from api_offices.serializers import OfficeSerializer, GroupListSerializer
-from rest_framework.response import Response
+from api_fields.models import Field
+from api_fields.serializers import FieldSerializers
 from api_oauth2.permissions.oauth2_permissions import TokenHasActionScope
 
 
-class OfficeView(viewsets.ModelViewSet):
+class FieldView(viewsets.ModelViewSet):
     required_alternate_scopes = {
         "list": [["admin"], ["super_admin"], ["employee"]],
         "create": [["admin"], ["super_admin"]],
@@ -23,21 +22,5 @@ class OfficeView(viewsets.ModelViewSet):
         return super(self.__class__, self).get_permissions()
 
     pagination_class = None
-
-    def get_queryset(self):
-        if self.action == "list":
-            return Group.objects.all()
-        return Office.objects.all()
-
-    def get_serializer_class(self):
-        if self.action == "create":
-            return OfficeSerializer
-        if self.action == "list":
-            return GroupListSerializer
-        return OfficeSerializer
-
-    def create(self, request, *args, **kwargs):
-        serializer = OfficeSerializer(data=request.data)
-        serializer.is_valid()
-        user = serializer.save()
-        return Response(serializer.data)
+    queryset = Field.objects.all()
+    serializer_class = FieldSerializers
