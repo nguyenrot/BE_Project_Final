@@ -1,8 +1,9 @@
 from rest_framework import viewsets
 from api_offices.serializers import GroupSerializer, GroupListSerializer
-from api_offices.models import Group
+from api_offices.models import Group, Office
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
+from rest_framework.decorators import action
 
 
 class GroupView(viewsets.ViewSet):
@@ -19,3 +20,9 @@ class GroupView(viewsets.ViewSet):
         group = get_object_or_404(queryset, pk=pk)
         serializer = GroupListSerializer(group)
         return Response(serializer.data)
+
+    @action(methods=['get'], detail=True)
+    def get_select(self, request, pk=None):
+        office = Office.objects.get(pk=pk)
+        offices = Office.objects.filter(parent_office=office).values("id", "name")
+        return Response(offices)
