@@ -45,7 +45,6 @@ class OfficeView(viewsets.ModelViewSet):
                                                "name",
                                                "parent_group")
         for group in groups:
-            print(group)
             OfficeService.get_select(group)
             root_group.append(group)
         return Response(root_group, status=status.HTTP_200_OK)

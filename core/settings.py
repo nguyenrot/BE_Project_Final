@@ -60,7 +60,9 @@ INSTALLED_APPS = [
     'api_departments',
     'api_offices',
     'api_fields',
-    'django_filters'
+    'django_filters',
+    'api_services',
+    'api_news'
 ]
 
 MIDDLEWARE = [
