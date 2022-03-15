@@ -1,1 +1,1 @@
-from api_services.serializers.service import ServiceSerializers
+from api_services.serializers.service import ServiceSerializers, ServiceListSerializers

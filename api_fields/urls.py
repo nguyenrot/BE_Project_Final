@@ -5,6 +5,6 @@ from rest_framework.routers import DefaultRouter
 router = DefaultRouter()
 router.register(r'', FieldView, basename='field')
 urlpatterns = [
-    path("office/<pk>", OfficeFieldView.as_view({"get": "retrieve"}), name="field_retrieve"),
+    path("office/<id_office>/", OfficeFieldView.as_view({"get": "retrieve"}), name="field_retrieve"),
     path("", include(router.urls)),
 ]
