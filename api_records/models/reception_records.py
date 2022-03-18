@@ -10,7 +10,7 @@ class ReceptionRecords(models.Model):
     )
     sender_name = models.CharField(max_length=255, null=False, blank=False)
     sent_date = models.DateTimeField(auto_now_add=True)
-    field = models.ForeignKey(Field, on_delete=models.CASCADE, blank=False, null=False, related_name="records")
+    # field = models.ForeignKey(Field, on_delete=models.CASCADE, blank=False, null=False, related_name="records")
     name = models.CharField(max_length=255, blank=False, null=False)
     records = models.JSONField(blank=True, null=True)
     service = models.ForeignKey(Service, on_delete=models.CASCADE, blank=False, null=False, related_name="records")

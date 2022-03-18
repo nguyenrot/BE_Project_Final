@@ -1,4 +1,4 @@
-from api_records.models import ApproveRecords
+from api_records.models import ApproveRecords, ReceptionRecords
 from api_records.serializers import ApproveRecordsSerializers
 from rest_framework import viewsets
 from rest_framework import filters
@@ -22,3 +22,11 @@ class ApproveRecordsView(viewsets.ModelViewSet):
 
     queryset = ApproveRecords.objects.all()
     serializer_class = ApproveRecordsSerializers
+
+    # def create(self, request, *args, **kwargs):
+    #     print(*args)
+    #     # uuid_reception_records = request.Data.get("reception_records")
+    #     reception_records = ReceptionRecords.objects.get(pk=uuid_reception_records)
+    #     reception_records.assignment = True
+    #     reception_records.save()
+    #     super().create(request, *args, **kwargs)

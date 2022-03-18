@@ -28,6 +28,7 @@ class ReceptionRecordsview(viewsets.ModelViewSet):
         reception_record = get_object_or_404(queryset, pk=pk)
         reception_record.approve = True
         reception_record.status = "Đã tiếp nhận"
+        reception_record.save()
         return Response("Đã tiếp nhận", status=status.HTTP_200_OK)
 
     def assignment(self, request, pk=None):
