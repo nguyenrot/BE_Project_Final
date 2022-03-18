@@ -16,6 +16,7 @@ class ReceptionRecords(models.Model):
     service = models.ForeignKey(Service, on_delete=models.CASCADE, blank=False, null=False, related_name="records")
     address = models.TextField(null=False, blank=False)
     phone_number = models.CharField(max_length=11, null=False, blank=False)
+    email = models.EmailField(null=False, blank=False, unique=True, default='DEFAULT VALUE')
     status = models.CharField(max_length=255, default="Đang tiếp nhận")
     approve = models.BooleanField(default=False)
     assignment = models.BooleanField(default=False)
