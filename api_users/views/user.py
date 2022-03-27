@@ -17,7 +17,7 @@ class UserView(viewsets.ModelViewSet):
     queryset = User.objects.all()
 
     def get_serializer_class(self):
-        if self.action == "create":
+        if self.action in ("create", "update", "partial_update"):
             return UserRegisterSerializer
         return UserSerializer
 
