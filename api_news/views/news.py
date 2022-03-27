@@ -10,9 +10,9 @@ class NewsView(viewsets.ModelViewSet):
     search_fields = ['title']
 
     required_alternate_scopes = {
-        "list": [["admin"], ["super_admin"], ["employee"]],
+        "list": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
         "create": [["admin"], ["super_admin"]],
-        "retrieve": [["admin"], ["super_admin"], ["employee"]],
+        "retrieve": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
         "update": [["admin"], ["super_admin"]],
         "partial_update": [["admin"], ["super_admin"]],
         "destroy": [["admin"], ["super_admin"]],

@@ -1,9 +1,10 @@
 from django.db import models
+from api_base.models import TimeStampedModel
 import uuid
 from django.template.defaultfilters import slugify
 
 
-class Department(models.Model):
+class Department(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )

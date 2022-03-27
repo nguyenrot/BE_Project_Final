@@ -10,4 +10,5 @@ class DepartmentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Department
-        fields = ["id", "code", "name", "discription", "slug"]
+        fields = "__all__"
+        extra_fields = ["slug"]

@@ -20,8 +20,7 @@ def add_user(apps, schema_editor):
         User.objects.create(
             username=SUPER_ADMIN_EMAIL,
             email=SUPER_ADMIN_EMAIL,
-            last_name="User",
-            first_name="Super",
+            name="Super User",
             is_superuser=True,
             password=make_password(SUPER_ADMIN_PASSWORD),
         )

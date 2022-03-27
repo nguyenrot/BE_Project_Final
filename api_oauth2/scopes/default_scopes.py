@@ -1,3 +1,4 @@
 default_scopes = {
-    "employee": "Employee",
+    "Employee receive": "employee_receive",
+    "Employee approve": "employee_approve",
 }

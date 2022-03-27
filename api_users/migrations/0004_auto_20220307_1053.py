@@ -15,7 +15,7 @@ def add_role(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('api_users', '0004_rename_first_name_user_name_remove_user_last_name_and_more'),
+        ('api_users', '0003_auto_20220306_1414'),
     ]
 
     operations = [migrations.RunPython(add_role, migrations.RunPython.noop)]

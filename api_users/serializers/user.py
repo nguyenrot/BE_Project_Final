@@ -13,14 +13,14 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "name", "email", "phone", "birthday", "address", "place", "avatar", "department", "position",
                   "roles",
-                  "username"]
+                  "username", "created_at", "updated_at"]
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["name", "email", "phone", "birthday", "address", "place", "avatar", "department", "position", "roles",
-                  "username", "password"]
+                  "username", "password", "created_at", "updated_at"]
 
     def create(self, validated_data):
         roles = validated_data.pop("roles")

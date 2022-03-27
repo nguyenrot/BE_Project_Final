@@ -1,10 +1,11 @@
 from django.db import models
 from api_fields.models import Field
 from api_services.models import Service
+from api_base.models import TimeStampedModel
 import uuid
 
 
-class ReceptionRecords(models.Model):
+class ReceptionRecords(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )

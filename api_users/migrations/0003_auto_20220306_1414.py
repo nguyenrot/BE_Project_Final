@@ -6,10 +6,15 @@ from django.db import migrations
 def add_role(apps, schema_editor):
     Role = apps.get_model("api_users", "Role")
 
-    admin_role, created = Role.objects.get_or_create(
-        name="Employee",
-        description="Account employee",
-        scope="employee",
+    Role.objects.get_or_create(
+        name="Employee receive",
+        description="Account employe receive",
+        scope="employee_receive",
+    )
+    Role.objects.get_or_create(
+        name="Employee approve",
+        description="Account employe approve",
+        scope="employee_approve",
     )
 
 
