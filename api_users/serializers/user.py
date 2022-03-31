@@ -4,10 +4,10 @@ from django.contrib.auth.hashers import make_password
 
 
 class UserSerializer(serializers.ModelSerializer):
-    roles = serializers.SerializerMethodField()
-
-    def get_roles(self, user):
-        return user.roles.first().name
+    # roles = serializers.SerializerMethodField()
+    #
+    # def get_roles(self, user):
+    #     return user.roles.first().name
 
     class Meta:
         model = User
