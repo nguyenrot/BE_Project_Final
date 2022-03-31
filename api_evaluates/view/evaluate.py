@@ -15,10 +15,7 @@ class EvaluateView(viewsets.ModelViewSet):
     }
 
     def get_permissions(self):
-        if self.action in ("create", "update", "partial_update", "destroy"):
-            self.permission_classes = [TokenHasActionScope]
-        if self.action in ("retrieve", "list", "get_all"):
-            self.permission_classes = []
+        self.permission_classes = [] if self.action in ("create", "list", "get_all") else [TokenHasActionScope]
         return super(self.__class__, self).get_permissions()
 
     queryset = Evaluate.objects.all()
