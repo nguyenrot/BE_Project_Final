@@ -151,7 +151,7 @@ REST_FRAMEWORK = {
         "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
     ],
     "DEFAULT_PAGINATION_CLASS": "api_base.pagination.CustomPagination",
-    "PAGE_SIZE": 12,
+    "PAGE_SIZE": 10,
     "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
 }
 
