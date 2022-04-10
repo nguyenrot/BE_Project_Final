@@ -22,7 +22,7 @@ class OfficeView(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ("create", "update", "partial_update", "destroy"):
             self.permission_classes = [TokenHasActionScope]
-        if self.action in ("retrieve", "list", "get_tree_office", "get_select"):
+        if self.action in ("retrieve", "list", "get_tree_office", "get_select", "get_all"):
             self.permission_classes = []
         return super(self.__class__, self).get_permissions()
 
@@ -48,3 +48,9 @@ class OfficeView(viewsets.ModelViewSet):
             OfficeService.get_select(group)
             root_group.append(group)
         return Response(root_group, status=status.HTTP_200_OK)
+
+    @action(methods=['get'], detail=False)
+    def get_all(self, request):
+        queryset = Office.objects.all()
+        serializer = OfficeSerializer(queryset, many=True)
+        return Response(serializer.data)

@@ -8,6 +8,7 @@ class News(TimeStampedModel):
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )
     title = models.CharField(max_length=255, blank=False, null=False)
+    summary = models.TextField(blank=True, null=True)
     content = models.TextField(blank=False, null=False)
 
     class Meta:
