@@ -9,7 +9,7 @@ def initial_group_data(apps, schema_editor):
     group_first.save()
     group_second = group_model(name="Các đơn vị cấp huyện", parent_group=None)
     group_second.save()
-    group_third = group_model(name="các đơn vị cấp xã trực thuộc huyện", parent_group=group_second)
+    group_third = group_model(name="Các đơn vị cấp xã trực thuộc huyện", parent_group=group_second)
     group_third.save()
 
 
