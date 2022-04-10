@@ -6,7 +6,7 @@ class FieldSerializers(serializers.ModelSerializer):
     name_parent_office = serializers.SerializerMethodField()
 
     def get_name_parent_office(self, instance):
-        return instance.office.name
+        return instance.parent_office.name if instance.parent_office else None
 
     class Meta:
         model = Field
