@@ -9,6 +9,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework.response import Response
 from api_base.pagination import CustomPagination
 from rest_framework.decorators import action
+from api_services.services import Services
 
 
 class ServiceView(viewsets.ModelViewSet):
@@ -27,7 +28,7 @@ class ServiceView(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ("create", "update", "partial_update", "destroy"):
             self.permission_classes = [TokenHasActionScope]
-        if self.action in ("retrieve", "list", "get_services_offices", "get_services_fields"):
+        if self.action in ("retrieve", "list", "get_services"):
             self.permission_classes = []
         return super(self.__class__, self).get_permissions()
 
@@ -38,20 +39,13 @@ class ServiceView(viewsets.ModelViewSet):
             return ServiceListSerializers
         return ServiceSerializers
 
-    def get_services_offices(self, request, id_office=None):
+    @action(methods=['get'], detail=False)
+    def get_services(self, request, *args, **kwargs):
         paginator = CustomPagination()
-        queryset = Office.objects.all()
-        office = get_object_or_404(queryset, pk=id_office)
-        services = Service.objects.filter(field__office=office)
-        result_page = paginator.paginate_queryset(services, request)
-        serializer = ServiceListSerializers(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
-
-    def get_services_fields(self, request, id_field=None):
-        paginator = CustomPagination()
-        queryset = Field.objects.all()
-        field = get_object_or_404(queryset, pk=id_field)
-        services = Service.objects.filter(field=field)
+        id_office = request.GET.get("office")
+        id_field = request.GET.get("field")
+        search = request.GET.get("search")
+        services = Services.get_services(id_office, id_field, search)
         result_page = paginator.paginate_queryset(services, request)
         serializer = ServiceListSerializers(result_page, many=True)
         return paginator.get_paginated_response(serializer.data)
