@@ -63,8 +63,6 @@ INSTALLED_APPS = [
     'django_filters',
     'api_services',
     'api_news',
-    'api_records',
-    'api_evaluates',
 ]
 
 MIDDLEWARE = [

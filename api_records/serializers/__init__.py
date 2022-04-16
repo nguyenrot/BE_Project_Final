@@ -1,2 +1,0 @@
-from api_records.serializers.reception_records import ReceptionRecordsSerializers
-from api_records.serializers.approve_recoreds import ApproveRecordsSerializers

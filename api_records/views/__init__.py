@@ -1,2 +1,0 @@
-from api_records.views.reception_records import ReceptionRecordsview
-from api_records.views.approve_records import ApproveRecordsView
