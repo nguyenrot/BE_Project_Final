@@ -8,6 +8,7 @@ v1_patterns = [
     path("field/", include(("api_fields.urls"))),
     path("news/", include(("api_news.urls"))),
     path("service/", include(("api_services.urls"))),
+    path("file/", include(("api_files.urls"))),
     re_path(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ]
 

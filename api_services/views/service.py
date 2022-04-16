@@ -28,7 +28,7 @@ class ServiceView(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ("create", "update", "partial_update", "destroy"):
             self.permission_classes = [TokenHasActionScope]
-        if self.action in ("retrieve", "list", "get_services"):
+        if self.action in ("retrieve", "list", "get_services", "get_all"):
             self.permission_classes = []
         return super(self.__class__, self).get_permissions()
 
@@ -48,4 +48,11 @@ class ServiceView(viewsets.ModelViewSet):
         services = Services.get_services(id_office, id_field, search)
         result_page = paginator.paginate_queryset(services, request)
         serializer = ServiceListSerializers(result_page, many=True)
+        return paginator.get_paginated_response(serializer.data)
+
+    @action(methods=['get'], detail=False)
+    def get_all(self, request, *args, **kwargs):
+        paginator = CustomPagination()
+        queryset = Service.objects.all()
+        serializer = ServiceListSerializers(queryset, many=True)
         return paginator.get_paginated_response(serializer.data)
