@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from api_files.models import File
-from api_files.serializers import FileSerializer
+from api_files.serializers import FileSerializer, GetFileSerializer
 from rest_framework import filters
 from api_oauth2.permissions.oauth2_permissions import TokenHasActionScope
 
@@ -26,4 +26,8 @@ class FileView(viewsets.ModelViewSet):
         return super(self.__class__, self).get_permissions()
 
     queryset = File.objects.all()
-    serializer_class = FileSerializer
+
+    def get_serializer_class(self, *args, **kwargs):
+        if self.action == "retrieve":
+            return GetFileSerializer
+        return FileSerializer

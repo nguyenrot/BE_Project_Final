@@ -1,2 +1,2 @@
-from api_files.serializers.file import FileSerializer
+from api_files.serializers.file import FileSerializer, GetFileSerializer
 from api_files.serializers.file_details import FileDetailsSerializer
