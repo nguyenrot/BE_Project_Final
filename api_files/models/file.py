@@ -13,3 +13,6 @@ class File(TimeStampedModel):
 
     class Meta:
         db_table = "files"
+
+    def __str__(self):
+        return self.name

@@ -55,19 +55,3 @@ class OfficeView(viewsets.ModelViewSet):
         queryset = Office.objects.all()
         serializer = OfficeSerializer(queryset, many=True)
         return Response(serializer.data)
-
-    # @action(methods=['get'], detail=False)
-    # def send_mail(self, request):
-    #     mail_data = {
-    #         "template": "mail_templates/test.html",
-    #         "subject": "Test send mail",
-    #         "context": {
-    #             "name": "Ky Nguyen",
-    #             # "link": link,
-    #             # "logo_uri": logo_uri,
-    #         },
-    #         "to": ["phamkynguyen753@gmail.com"],
-    #     }
-    #     result = SendMail.send_html_email(mail_data)
-    #     print(result)
-    #     return Response("ok")

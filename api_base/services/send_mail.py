@@ -19,4 +19,4 @@ class SendMail:
         text_content = strip_tags(html_content)
         msg = EmailMultiAlternatives(subject, text_content, 'Dịch vụ công Epoch-making  <noreply@epoch-making.xyz>', to)
         msg.attach_alternative(html_content, "text/html")
-        return msg.send()
+        msg.send()

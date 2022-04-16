@@ -15,10 +15,12 @@ class ReceptionRecord(TimeStampedModel):
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )
     name_sender = models.CharField(max_length=255, null=False, blank=False)
+    code = models.CharField(default=None, max_length=10, unique=True)
     sent_date = models.DateTimeField(auto_now_add=True)
     file = models.ForeignKey(File, related_name="reception", null=False, blank=False, on_delete=models.CASCADE)
     address = models.TextField(blank=False, null=False)
     phone_number = models.CharField(blank=False, null=False, max_length=10)
+    email = models.EmailField(blank=False, null=False)
     status = models.IntegerField(choices=STATUS_CHOICES, default=1)
     assignment = models.BooleanField(default=False)
     content = models.TextField(blank=True, null=True)

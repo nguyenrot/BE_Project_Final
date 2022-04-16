@@ -9,6 +9,7 @@ class ReceptionRecordDetail(TimeStampedModel):
     id = models.UUIDField(
         primary_key=True, default=uuid.uuid4, editable=False, unique=True
     )
-    reception_record = models.ForeignKey(ReceptionRecord, on_delete=models.CASCADE, null=False, blank=False)
+    reception_record = models.ForeignKey(ReceptionRecord, on_delete=models.CASCADE, null=False, blank=False,
+                                         related_name="details")
     attach = models.FileField(blank=False, null=False)
     file_detail = models.ForeignKey(FileDetails, on_delete=models.CASCADE, null=False, blank=False)
