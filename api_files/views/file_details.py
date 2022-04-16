@@ -42,10 +42,9 @@ class FileDetailView(viewsets.ModelViewSet):
         note = self.MyList(request.data.getlist('note'))
         id_status = self.MyList(request.data.getlist('status'))
         form = self.MyList(request.data.getlist('form'))
-        attach = self.MyList(request.data.getlist('attach'))
         for i in range(len(ingredient)):
             data = {'file': id_file, 'ingredient': ingredient.get(i), 'original': original.get(i), 'copy': copy.get(i),
-                    'note': note.get(i), 'status': id_status.get(i), 'form': form.get(i), 'attach': attach.get(i)}
+                    'note': note.get(i), 'status': id_status.get(i), 'form': form.get(i)}
             file_serializer = FileDetailsSerializer(data=data)
             if file_serializer.is_valid():
                 file_serializer.save()
