@@ -23,7 +23,7 @@ class FileDetails(TimeStampedModel):
     original = models.IntegerField(default=0)
     copy = models.IntegerField(default=0)
     note = models.TextField(blank=True, null=True)
-    status = models.CharField(choices=STATUS_CHOICES, default=2, max_length=1)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=2, max_length=1)
     form = models.TextField(blank=True, null=True)
     file = models.ForeignKey(File, blank=False, null=False, on_delete=models.CASCADE, related_name="details")
 
