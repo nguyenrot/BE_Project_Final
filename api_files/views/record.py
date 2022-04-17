@@ -108,5 +108,8 @@ class RecordView(viewsets.ModelViewSet):
 
     @action(methods=["POST"], detail=False)
     def get_confirm_payment_momo(self, request):
-        print(request.data.get("message"))
-        print(request.data.get("orderId"))
+        order_id = request.data.get("orderId")
+        records = ReceptionRecord.objects.get(orderId=order_id)
+        records.payment = True
+        records.status = 1
+        return Response("ok")
