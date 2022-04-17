@@ -12,8 +12,8 @@ class MomoPayment:
     @classmethod
     def oder_info(cls, records=ReceptionRecord):
         order_info = "paywithMoMo"
-        redirect_url = settings.REDIRECT_URL
-        ipn_url = settings.IPN_URL
+        redirect_url = settings.REDIRECT_URL_MOMO
+        ipn_url = settings.IPN_URL_MOMO
         amount = str(records.file.amount)
         order_id = str(uuid.uuid4())
         request_id = str(uuid.uuid4())

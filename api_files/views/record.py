@@ -41,6 +41,8 @@ class RecordView(viewsets.ModelViewSet):
     def get_serializer_class(self, *args, **kwargs):
         if self.action in ("retrieve"):
             return ViewCustomerRecordSerializer
+        if self.action in ("get_confirm_payment_momo"):
+            return None
         return ReceptionRecordSerializer
 
     def create(self, request, *args, **kwargs):
@@ -107,9 +109,10 @@ class RecordView(viewsets.ModelViewSet):
         return Response(result, status=status.HTTP_201_CREATED)
 
     @action(methods=["POST"], detail=False)
-    def get_confirm_payment_momo(self, request):
+    def get_confirm_payment_momo(self, request, *args, **kwargs):
         order_id = request.data.get("orderId")
-        records = ReceptionRecord.objects.get(orderId=order_id)
+        records = ReceptionRecord.objects.get(order_id=order_id)
         records.payment = True
         records.status = 1
+        records.save()
         return Response("ok")
