@@ -11,7 +11,7 @@ from api_files.models import ReceptionRecord
 class MomoPayment:
     @classmethod
     def oder_info(cls, records=ReceptionRecord):
-        order_info = "paywithMoMo"
+        order_info = "Thanh toán hồ sơ " + records.file.name
         redirect_url = settings.REDIRECT_URL_MOMO
         ipn_url = settings.IPN_URL_MOMO
         amount = str(records.file.amount)

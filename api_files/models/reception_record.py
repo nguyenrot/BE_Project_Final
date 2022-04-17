@@ -26,6 +26,7 @@ class ReceptionRecord(TimeStampedModel):
     payment = models.BooleanField(default=False)
     order_id = models.CharField(max_length=255, default=None, null=True, blank=True)
     request_id = models.CharField(max_length=255, default=None, null=True, blank=True)
+    link_payment = models.TextField(default=None, null=True, blank=True)
     assignment = models.BooleanField(default=False)
     content = models.TextField(blank=True, null=True)
     note = models.TextField(blank=True, null=True)

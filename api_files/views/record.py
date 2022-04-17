@@ -105,14 +105,7 @@ class RecordView(viewsets.ModelViewSet):
             }
             SendMail.send_html_email(mail_data)
             info_payment = MomoPayment.oder_info(record)
+            record.link_payment = info_payment.get("payUrl")
+            record.save()
             result["link_payment"] = info_payment.get("payUrl")
         return Response(result, status=status.HTTP_201_CREATED)
-
-    @action(methods=["POST"], detail=False)
-    def get_confirm_payment_momo(self, request, *args, **kwargs):
-        order_id = request.data.get("orderId")
-        records = ReceptionRecord.objects.get(order_id=order_id)
-        records.payment = True
-        records.status = 1
-        records.save()
-        return Response("ok")
