@@ -16,8 +16,7 @@ class ReceptionRecordDetailSerializer(serializers.ModelSerializer):
 
 
 class ViewCustomerRecordSerializer(serializers.ModelSerializer):
-    code = serializers.CharField(read_only=True)
-    status = serializers.CharField(source="get_status_display", read_only=True)
+    status_display = serializers.CharField(source="get_status_display", read_only=True)
     details = ReceptionRecordDetailSerializer(many=True, read_only=True)
     file = serializers.SerializerMethodField()
 
@@ -26,4 +25,5 @@ class ViewCustomerRecordSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ReceptionRecord
-        fields = ["id", "name_sender", "code", "phone_number", "address", "email", "file", "status", "details"]
+        fields = ["id", "name_sender", "code", "phone_number", "address", "email", "file", "status", "details",
+                  "status_display"]

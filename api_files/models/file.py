@@ -10,6 +10,7 @@ class File(TimeStampedModel):
     )
     name = models.CharField(max_length=255, blank=False, null=False)
     service = models.ForeignKey(Service, related_name="files", blank=False, null=False, on_delete=models.CASCADE)
+    amount = models.IntegerField(default=None, null=True, blank=True)
 
     class Meta:
         db_table = "files"

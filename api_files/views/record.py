@@ -11,6 +11,8 @@ from api_oauth2.permissions.oauth2_permissions import TokenHasActionScope
 import random
 import string
 from api_base.services import SendSms, SendMail
+from utils import MomoPayment
+from rest_framework.decorators import action
 
 
 class RecordView(viewsets.ModelViewSet):
@@ -32,7 +34,7 @@ class RecordView(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in ("update", "partial_update", "destroy"):
             self.permission_classes = [TokenHasActionScope]
-        if self.action in ("retrieve", "list", "create"):
+        if self.action in ("retrieve", "list", "create", "get_confirm_payment_momo"):
             self.permission_classes = []
         return super(self.__class__, self).get_permissions()
 
@@ -65,18 +67,46 @@ class RecordView(viewsets.ModelViewSet):
             else:
                 return Response(record_detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         record = ReceptionRecord.objects.get(pk=id_record)
-        body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}'.format(record.file.name, record.code)
-        SendSms.send_sms(phone_number=phone_number, body=body)
-        mail_data = {
-            "template": "mail_templates/mail_successful_file_registration.html",
-            "subject": "Đăng ký hồ sơ thành công",
-            "context": {
-                "name": record.name_sender,
-                "body": body,
-                "title": "Dịch vụ công Epoch Making xin thông báo"
-            },
-            "to": [record.email],
-        }
-        SendMail.send_html_email(mail_data)
+        if not record.file.amount:
+            record.payment = True
+            record.status = 1
+            record.save()
         view_record_serializer = ViewCustomerRecordSerializer(record)
-        return Response(view_record_serializer.data, status=status.HTTP_201_CREATED)
+        result = view_record_serializer.data
+        if record.payment:
+            body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}'.format(record.file.name, record.code)
+            SendSms.send_sms(phone_number=phone_number, body=body)
+            mail_data = {
+                "template": "mail_templates/mail_successful_file_registration.html",
+                "subject": "Đăng ký hồ sơ thành công",
+                "context": {
+                    "name": record.name_sender,
+                    "body": body,
+                    "title": "Dịch vụ công Epoch Making xin thông báo"
+                },
+                "to": [record.email],
+            }
+            SendMail.send_html_email(mail_data)
+        else:
+            body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}. Hồ sơ này cần phải thanh\
+             toán để hoàn tất thủ tục'.format(
+                record.file.name, record.code)
+            mail_data = {
+                "template": "mail_templates/mail_successful_file_registration.html",
+                "subject": "Đăng ký hồ sơ thành công",
+                "context": {
+                    "name": record.name_sender,
+                    "body": body,
+                    "title": "Dịch vụ công Epoch Making xin thông báo"
+                },
+                "to": [record.email],
+            }
+            SendMail.send_html_email(mail_data)
+            info_payment = MomoPayment.oder_info(record)
+            result["link_payment"] = info_payment.get("payUrl")
+        return Response(result, status=status.HTTP_201_CREATED)
+
+    @action(methods=["POST"], detail=False)
+    def get_confirm_payment_momo(self, request):
+        print(request.data.get("message"))
+        print(request.data.get("orderId"))
