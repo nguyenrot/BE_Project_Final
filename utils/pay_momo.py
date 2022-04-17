@@ -36,7 +36,8 @@ class MomoPayment:
             "extraData": extra_data,
             "signature": signature
         }
-        records.orderId = order_id
+        records.order_id = order_id
+        records.request_id = request_id
         records.save()
         return cls.create_payment(data)
 
