@@ -15,7 +15,7 @@ class Service(TimeStampedModel):
     code_DVCQG = models.CharField(max_length=255, blank=True, null=True)
     sequence = models.TextField(blank=True, null=True)
     method = models.JSONField(blank=True, null=True)
-    profile_composition = models.JSONField(blank=True, null=True)
+    amount = models.IntegerField(default=None, null=True, blank=True)
     object = models.TextField(blank=True, null=True)
     result = models.TextField(blank=True, null=True)
     receiving_address = models.CharField(max_length=255, blank=True, null=True)
