@@ -5,16 +5,16 @@ import hmac
 import hashlib
 import codecs
 from django.conf import settings
-from api_files.models import ReceptionRecord
+from api_files.models import ReceptionRecord, Payment
 
 
 class MomoPayment:
     @classmethod
     def oder_info(cls, records=ReceptionRecord):
-        order_info = "Thanh toán hồ sơ " + records.file.name
+        order_info = "Thanh toán hồ sơ " + records.service.name
         redirect_url = settings.REDIRECT_URL_MOMO
         ipn_url = settings.IPN_URL_MOMO
-        amount = str(records.file.amount)
+        amount = str(records.service.amount)
         order_id = str(uuid.uuid4())
         request_id = str(uuid.uuid4())
         request_type = "onDelivery"
@@ -36,10 +36,11 @@ class MomoPayment:
             "extraData": extra_data,
             "signature": signature
         }
-        records.order_id = order_id
-        records.request_id = request_id
+        r = cls.create_payment(data)
+        payment = Payment.objects.create(order_id=order_id, request_id=request_id, pay_url=r.get("payUrl"))
+        records.payment = payment
         records.save()
-        return cls.create_payment(data)
+        return r.get("payUrl")
 
     @classmethod
     def signature_generator(cls, raw_signature):
