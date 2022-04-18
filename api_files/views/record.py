@@ -50,9 +50,9 @@ class RecordView(viewsets.ModelViewSet):
         phone_number = request.data.get("phone_number")
         address = request.data.get("address")
         email = request.data.get("email")
-        file = request.data.get("file")
+        service = request.data.get("service")
         code = ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
-        data_record = {"name_sender": name_sender, "phone_number": phone_number, "address": address, "file": file,
+        data_record = {"name_sender": name_sender, "phone_number": phone_number, "address": address, "service": service,
                        "code": code, "email": email}
         record_serializer = ReceptionRecordSerializer(data=data_record)
         if not record_serializer.is_valid():
@@ -60,52 +60,53 @@ class RecordView(viewsets.ModelViewSet):
         record_serializer.save()
         id_record = record_serializer.data.get("id")
         attach = self.MyList(request.data.getlist('attach'))
-        file_detail = self.MyList(request.data.getlist('file_detail'))
-        for i in range(len(file_detail)):
-            data = {'reception_record': id_record, "attach": attach.get(i), "file_detail": file_detail.get(i)}
+        service_component = self.MyList(request.data.getlist('service_component'))
+        for i in range(len(service_component)):
+            data = {'reception_record': id_record, "attach": attach.get(i),
+                    "service_component": service_component.get(i)}
             record_detail_serializer = ReceptionRecordDetailSerializer(data=data)
             if record_detail_serializer.is_valid():
                 record_detail_serializer.save()
             else:
                 return Response(record_detail_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         record = ReceptionRecord.objects.get(pk=id_record)
-        if not record.file.amount:
-            record.payment = True
-            record.status = 1
-            record.save()
+        # if not record.file.amount:
+        #     record.payment = True
+        #     record.status = 1
+        #     record.save()
         view_record_serializer = ViewCustomerRecordSerializer(record)
         result = view_record_serializer.data
-        if record.payment:
-            body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}'.format(record.file.name, record.code)
-            SendSms.send_sms(phone_number=phone_number, body=body)
-            mail_data = {
-                "template": "mail_templates/mail_successful_file_registration.html",
-                "subject": "Đăng ký hồ sơ thành công",
-                "context": {
-                    "name": record.name_sender,
-                    "body": body,
-                    "title": "Dịch vụ công Epoch Making xin thông báo"
-                },
-                "to": [record.email],
-            }
-            SendMail.send_html_email(mail_data)
-        else:
-            body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}. Hồ sơ này cần phải thanh\
-             toán để hoàn tất thủ tục'.format(
-                record.file.name, record.code)
-            mail_data = {
-                "template": "mail_templates/mail_successful_file_registration.html",
-                "subject": "Đăng ký hồ sơ thành công",
-                "context": {
-                    "name": record.name_sender,
-                    "body": body,
-                    "title": "Dịch vụ công Epoch Making xin thông báo"
-                },
-                "to": [record.email],
-            }
-            SendMail.send_html_email(mail_data)
-            info_payment = MomoPayment.oder_info(record)
-            record.link_payment = info_payment.get("payUrl")
-            record.save()
-            result["link_payment"] = info_payment.get("payUrl")
+        # if record.payment:
+        #     body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}'.format(record.file.name, record.code)
+        #     SendSms.send_sms(phone_number=phone_number, body=body)
+        #     mail_data = {
+        #         "template": "mail_templates/mail_successful_file_registration.html",
+        #         "subject": "Đăng ký hồ sơ thành công",
+        #         "context": {
+        #             "name": record.name_sender,
+        #             "body": body,
+        #             "title": "Dịch vụ công Epoch Making xin thông báo"
+        #         },
+        #         "to": [record.email],
+        #     }
+        #     SendMail.send_html_email(mail_data)
+        # else:
+        #     body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}. Hồ sơ này cần phải thanh\
+        #      toán để hoàn tất thủ tục'.format(
+        #         record.file.name, record.code)
+        #     mail_data = {
+        #         "template": "mail_templates/mail_successful_file_registration.html",
+        #         "subject": "Đăng ký hồ sơ thành công",
+        #         "context": {
+        #             "name": record.name_sender,
+        #             "body": body,
+        #             "title": "Dịch vụ công Epoch Making xin thông báo"
+        #         },
+        #         "to": [record.email],
+        #     }
+        #     SendMail.send_html_email(mail_data)
+        #     info_payment = MomoPayment.oder_info(record)
+        #     record.link_payment = info_payment.get("payUrl")
+        #     record.save()
+        #     result["link_payment"] = info_payment.get("payUrl")
         return Response(result, status=status.HTTP_201_CREATED)
