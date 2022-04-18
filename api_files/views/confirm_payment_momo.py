@@ -19,7 +19,11 @@ class ConfirmPaymentView(viewsets.ViewSet):
         payment.result_code = request_code
         payment.deep_link = request.data.get("deeplink")
         payment.qr_code_url = request.data.get("qrCodeUrl")
-        if request_code == "0":
-            payment.record.status = 1
+        record = payment.record
+        if request_code == 0:
+            record.status = 1
+        if request_code == 1003:
+            record.status = 4
+        record.save()
         payment.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
