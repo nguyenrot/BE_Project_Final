@@ -82,6 +82,8 @@ class ServiceView(viewsets.ModelViewSet):
             return ServiceListSerializers
         return ServiceSerializers
 
+    pagination_class = CustomPagination
+
     @action(methods=['get'], detail=False)
     def get_services(self, request, *args, **kwargs):
         paginator = CustomPagination()
@@ -91,11 +93,11 @@ class ServiceView(viewsets.ModelViewSet):
         services = Services.get_services(id_office, id_field, search)
         result_page = paginator.paginate_queryset(services, request)
         serializer = ServiceListSerializers(result_page, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        return self.get_paginated_response(serializer.data)
 
     @action(methods=['get'], detail=False)
     def get_all(self, request, *args, **kwargs):
-        paginator = CustomPagination()
         queryset = Service.objects.all()
-        serializer = ServiceListSerializers(queryset, many=True)
-        return paginator.get_paginated_response(serializer.data)
+        paged_queryset = self.paginate_queryset(queryset)
+        serializer = ServiceListSerializers(paged_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
