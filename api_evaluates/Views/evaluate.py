@@ -51,7 +51,7 @@ class EvaluateView(viewsets.ModelViewSet):
         record = ReceptionRecord.objects.filter(code=code).first()
 
         if not record:
-            return Response("Không tìm thấy mã hồ sơ", status=status.HTTP_404_NOT_FOUND)
+            return Response("Không tìm thấy mã hồ sơ", status=status.HTTP_400_BAD_REQUEST)
 
         data = {
             "record": record.id,

@@ -91,8 +91,8 @@ class ServiceView(viewsets.ModelViewSet):
         id_field = request.GET.get("field")
         search = request.GET.get("search")
         services = Services.get_services(id_office, id_field, search)
-        result_page = paginator.paginate_queryset(services, request)
-        serializer = ServiceListSerializers(result_page, many=True)
+        paged_queryset = self.paginate_queryset(services)
+        serializer = ServiceListSerializers(paged_queryset, many=True)
         return self.get_paginated_response(serializer.data)
 
     @action(methods=['get'], detail=False)

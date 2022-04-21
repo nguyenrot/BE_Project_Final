@@ -23,7 +23,9 @@ class UserView(viewsets.ModelViewSet):
 
     def create(self, request, *args, **kwargs):
         serializer = UserRegisterSerializer(data=request.data)
-        serializer.is_valid()
-        user = serializer.save()
+        if serializer.is_valid():
+            user = serializer.save()
+        else:
+            return Response(serializer.errors)
         serializer_get = UserSerializer(user)
         return Response(serializer_get.data, status=status.HTTP_201_CREATED)

@@ -6,3 +6,4 @@ from api_files.serializers.reception_record import (
     ViewCustomerRecordSerializer
 )
 from api_files.serializers.service_component import ServiceComponentSerializers
+from api_files.serializers.approve_record import ApproveSerializer, ContentSerializer

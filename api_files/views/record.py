@@ -2,7 +2,9 @@ from rest_framework import viewsets
 from api_files.serializers import (
     ReceptionRecordSerializer,
     ReceptionRecordDetailSerializer,
-    ViewCustomerRecordSerializer
+    ViewCustomerRecordSerializer,
+    ApproveSerializer,
+    ContentSerializer,
 )
 from api_files.models import ReceptionRecord
 from rest_framework.response import Response
@@ -13,6 +15,7 @@ import string
 from api_base.services import SendSms, SendMail
 from utils import MomoPayment
 from rest_framework.decorators import action
+from api_base.pagination import CustomPagination
 
 
 class RecordView(viewsets.ModelViewSet):
@@ -25,6 +28,11 @@ class RecordView(viewsets.ModelViewSet):
         "update": [["admin"], ["super_admin"]],
         "partial_update": [["admin"], ["super_admin"]],
         "destroy": [["admin"], ["super_admin"]],
+        "reception": [["admin"], ["super_admin"], ["employee_receive"]],
+        "approve": [["admin"], ["super_admin"], ["employee_approve"]],
+        "cancel": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
+        "get_record": [["admin"], ["super_admin"], ["employee_receive"]],
+        "get_record_reception": [["admin"], ["super_admin"], ["employee_approve"]],
     }
 
     class MyList(list):
@@ -32,16 +40,22 @@ class RecordView(viewsets.ModelViewSet):
             return self[index] if len(self) > index else default
 
     def get_permissions(self):
-        if self.action in ("update", "partial_update", "destroy"):
+        if self.action in (
+                "update", "partial_update", "destroy", "reception", "cancel", "approve", "get_record",
+                "get_record_reception"):
             self.permission_classes = [TokenHasActionScope]
-        if self.action in ("retrieve", "list", "create", "get_confirm_payment_momo"):
+        if self.action in ("retrieve", "list", "create", "get_record_code"):
             self.permission_classes = []
         return super(self.__class__, self).get_permissions()
 
     def get_serializer_class(self, *args, **kwargs):
         if self.action in ("retrieve"):
             return ViewCustomerRecordSerializer
-        if self.action in ("get_confirm_payment_momo"):
+        if self.action in ("cancel", "approve"):
+            return ContentSerializer
+        if self.action in ("reception"):
+            return ApproveSerializer
+        if self.action in ("get_record", "get_record_code", "get_record_reception"):
             return None
         return ReceptionRecordSerializer
 
@@ -106,3 +120,71 @@ class RecordView(viewsets.ModelViewSet):
             }
             SendMail.send_html_email(mail_data)
         return Response(result, status=status.HTTP_201_CREATED)
+
+    pagination_class = CustomPagination
+
+    @action(methods=['get'], detail=False)
+    def get_record_code(self, request, *args, **kwargs):
+        paginator = CustomPagination()
+        code = request.GET.get("code")
+        record = ReceptionRecord.objects.filter(code__icontains=code)
+        paged_queryset = self.paginate_queryset(record)
+        serializer = ReceptionRecordSerializer(paged_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    @action(detail=False, methods=['patch'])
+    def reception(self, request):
+        id_record = request.data.get("reception_record")
+        record = ReceptionRecord.objects.get(pk=id_record)
+        if record.status == 2:
+            return Response("Hồ sơ {0} đã được tiếp nhận".format(record.code), status=status.HTTP_200_OK)
+        if record.status == 4:
+            return Response("Hồ sơ {0} đã bị hủy".format(record.code), status=status.HTTP_200_OK)
+        if record.status == 0:
+            return Response("Hồ sơ {0} chưa thanh toán".format(record.code), status=status.HTTP_200_OK)
+        record.status = 2
+        record.note = request.data.pop("note", None)
+        record.save()
+        serializer = ApproveSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+        else:
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+        return Response('Tiếp nhận hồ sơ {0} thành công'.format(record.code), status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['patch'])
+    def cancel(self, request, pk=None):
+        record = self.get_object()
+        record.status = 4
+        record.content = request.data.get("content")
+        record.save()
+        return Response('Hủy hồ sơ {0} thành công'.format(record.code), status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['patch'])
+    def approve(self, request, pk=None):
+        record = self.get_object()
+        # if record.approve.user_assignment.id != request.user:
+        #     return Response("User này không được chỉ định cho hồ sơ {0}".format(record.code), status=status.HTTP_200_OK)
+        if record.status == 1:
+            return Response("Hồ sơ {0} chưa được tiếp nhận".format(record.code), status=status.HTTP_200_OK)
+        if record.status == 4:
+            return Response("Hồ sơ {0} đã bị hủy".format(record.code), status=status.HTTP_200_OK)
+        if record.status == 0:
+            return Response("Hồ sơ {0} chưa thanh toán".format(record.code), status=status.HTTP_200_OK)
+        record.status = 3
+        record.content = request.data.get("content")
+        record.save()
+        return Response('Duyệt hồ sơ {0} thành công'.format(record.code), status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def get_record(self, request):
+        record = ReceptionRecord.objects.filter(status=2)
+        serializer = ReceptionRecordSerializer(record, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['get'])
+    def get_record_reception(self, request):
+        record = ReceptionRecord.objects.filter(approve__user_assignment=request.user)
+        serializer = ReceptionRecordSerializer(record, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
