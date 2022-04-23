@@ -48,10 +48,12 @@ class ServiceView(viewsets.ModelViewSet):
         object = request.data.get("object")
         result = request.data.get("result")
         receiving_address = request.data.get("receiving_address")
+        juridical = request.data.get("juridical")
         description = request.data.get("description")
         data = {"field": field, "name": name, "decision_number": decision_number, "type_procedure": type_procedure,
                 "code_DVCQG": code_dvcqg, "sequence": sequence, "method": method, "amount": amount, "object": object,
-                "result": result, "receiving_address": receiving_address, "description": description}
+                "result": result, "receiving_address": receiving_address, "description": description,
+                "juridical": juridical}
         service_serializer = ServiceSerializers(data=data)
         if service_serializer.is_valid():
             service_serializer.save()
