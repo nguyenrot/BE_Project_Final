@@ -151,6 +151,19 @@ class RecordView(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
+        body = 'Mã hồ sơ {0} đã được tiếp nhận thành công.'.format(record.code)
+        SendSms.send_sms(phone_number=record.phone_number, body=body)
+        mail_data = {
+            "template": "mail_templates/mail_successful_file_registration.html",
+            "subject": f"Hồ sơ {record.code} đã được tiếp nhận",
+            "context": {
+                "name": record.name_sender,
+                "body": body,
+                "title": "Dịch vụ công Epoch Making xin thông báo"
+            },
+            "to": [record.email],
+        }
+        SendMail.send_html_email(mail_data)
         return Response('Tiếp nhận hồ sơ {0} thành công'.format(record.code), status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['patch'])
@@ -159,6 +172,19 @@ class RecordView(viewsets.ModelViewSet):
         record.status = 4
         record.content = request.data.get("content")
         record.save()
+        body = 'Mã hồ sơ {0} đã bị hủy.'.format(record.code)
+        SendSms.send_sms(phone_number=record.phone_number, body=body)
+        mail_data = {
+            "template": "mail_templates/mail_successful_file_registration.html",
+            "subject": f"Hồ sơ {record.code} đã bị hủy",
+            "context": {
+                "name": record.name_sender,
+                "body": body,
+                "title": "Dịch vụ công Epoch Making xin thông báo"
+            },
+            "to": [record.email],
+        }
+        SendMail.send_html_email(mail_data)
         return Response('Hủy hồ sơ {0} thành công'.format(record.code), status=status.HTTP_200_OK)
 
     @action(detail=True, methods=['patch'])
@@ -175,6 +201,20 @@ class RecordView(viewsets.ModelViewSet):
         record.status = 3
         record.content = request.data.get("content")
         record.save()
+        body = 'Mã hồ sơ {0} được duyệt thành công và sẽ sớm được gửi đến địa chỉ {1}.'.format(record.service.name,
+                                                                                               record.address)
+        SendSms.send_sms(phone_number=record.phone_number, body=body)
+        mail_data = {
+            "template": "mail_templates/mail_successful_file_registration.html",
+            "subject": f"Hồ sơ {record.code} được duyệt",
+            "context": {
+                "name": record.name_sender,
+                "body": body,
+                "title": "Dịch vụ công Epoch Making xin thông báo"
+            },
+            "to": [record.email],
+        }
+        SendMail.send_html_email(mail_data)
         return Response('Duyệt hồ sơ {0} thành công'.format(record.code), status=status.HTTP_200_OK)
 
     @action(detail=False, methods=['get'])
