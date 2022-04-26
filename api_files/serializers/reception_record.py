@@ -20,6 +20,10 @@ class ReceptionRecordDetailSerializer(serializers.ModelSerializer):
     original = serializers.SerializerMethodField()
     copy = serializers.SerializerMethodField()
     note = serializers.SerializerMethodField()
+    file_name = serializers.SerializerMethodField()
+
+    def get_file_name(self, instance):
+        return instance.attach.name
 
     def get_ingredient(self, instance):
         return instance.service_component.ingredient
@@ -36,7 +40,7 @@ class ReceptionRecordDetailSerializer(serializers.ModelSerializer):
     class Meta:
         model = ReceptionRecordDetail
         fields = "__all__"
-        extra_fields = ["ingredient", "original", "copy", "note"]
+        extra_fields = ["ingredient", "original", "copy", "note", "file_name"]
 
 
 class ViewCustomerRecordSerializer(serializers.ModelSerializer):

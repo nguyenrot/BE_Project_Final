@@ -4,9 +4,15 @@ from api_files.models import ServiceComponent
 
 
 class ServiceComponentSerializers(serializers.ModelSerializer):
+    file_name = serializers.SerializerMethodField()
+
+    def get_file_name(self, service):
+        return service.file_sample.name
+
     class Meta:
         model = ServiceComponent
         fields = "__all__"
+        extra_fields = ["file_name"]
 
 
 class ServiceSerializers(serializers.ModelSerializer):
