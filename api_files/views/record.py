@@ -102,7 +102,7 @@ class RecordView(viewsets.ModelViewSet):
             SendMail.send_html_email(mail_data)
         view_record_serializer = ViewCustomerRecordSerializer(record)
         result = view_record_serializer.data
-        if not record.status:
+        if record.status == 0:
             MomoPayment.oder_info(record)
             result["pay_url"] = MomoPayment.oder_info(record)
             body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}. Hồ sơ này cần phải thanh\

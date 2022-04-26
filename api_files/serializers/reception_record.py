@@ -4,15 +4,15 @@ from api_files.models import ReceptionRecord, ReceptionRecordDetail, ApproveReco
 
 class ReceptionRecordSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source="get_status_display", read_only=True)
-    service = serializers.SerializerMethodField()
+    service_name = serializers.SerializerMethodField()
 
-    def get_service(self, instance):
+    def get_service_name(self, instance):
         return instance.service.name
 
     class Meta:
         model = ReceptionRecord
         fields = ["id", "name_sender", "phone_number", "address", "email", "service", "code", "status",
-                  "status_display"]
+                  "status_display", "service_name"]
 
 
 class ReceptionRecordDetailSerializer(serializers.ModelSerializer):
@@ -46,16 +46,16 @@ class ReceptionRecordDetailSerializer(serializers.ModelSerializer):
 class ViewCustomerRecordSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source="get_status_display", read_only=True)
     details = ReceptionRecordDetailSerializer(many=True, read_only=True)
-    service = serializers.SerializerMethodField()
+    service_name = serializers.SerializerMethodField()
     pay_url = serializers.SerializerMethodField()
 
     def get_pay_url(self, instance):
-        return instance.payment.pay_url
+        return instance.payment.pay_url if instance.payment else None
 
-    def get_service(self, instance):
+    def get_service_name(self, instance):
         return instance.service.name
 
     class Meta:
         model = ReceptionRecord
         fields = ["id", "name_sender", "code", "phone_number", "address", "email", "service", "status", "details",
-                  "status_display", "pay_url"]
+                  "status_display", "pay_url", "service_name"]
