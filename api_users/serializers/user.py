@@ -3,16 +3,28 @@ from api_users.models import User
 from django.contrib.auth.hashers import make_password
 
 
+def get_list_name_roles(list_role):
+    roles = []
+    for role in list_role:
+        roles.append(role.name)
+    return roles
+
+
 class UserSerializer(serializers.ModelSerializer):
     # roles = serializers.SerializerMethodField()
     #
     # def get_roles(self, user):
     #     return user.roles.first().name
 
+    list_role = serializers.SerializerMethodField()
+
+    def get_list_role(self, user):
+        return get_list_name_roles(user.roles.all())
+
     class Meta:
         model = User
         fields = ["id", "name", "email", "phone", "birthday", "address", "place", "avatar", "department", "position",
-                  "roles",
+                  "roles", "list_role",
                   "username", "created_at", "updated_at"]
 
 

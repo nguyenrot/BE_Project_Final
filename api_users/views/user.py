@@ -3,6 +3,7 @@ from api_users.models import User
 from rest_framework.response import Response
 from api_users.serializers import UserSerializer, UserRegisterSerializer
 from rest_framework import status
+from rest_framework.decorators import action
 
 
 class UserView(viewsets.ModelViewSet):
@@ -13,6 +14,7 @@ class UserView(viewsets.ModelViewSet):
         "update": [["admin"], ["super_admin"]],
         "partial_update": [["admin"], ["super_admin"]],
         "destroy": [["admin"], ["super_admin"]],
+        "my_info": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
     }
     queryset = User.objects.all()
 
@@ -26,6 +28,12 @@ class UserView(viewsets.ModelViewSet):
         if serializer.is_valid():
             user = serializer.save()
         else:
-            return Response(serializer.errors)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         serializer_get = UserSerializer(user)
         return Response(serializer_get.data, status=status.HTTP_201_CREATED)
+
+    @action(methods=['get'], detail=False)
+    def my_info(self, request):
+        user = request.user
+        serializer_get = UserSerializer(user)
+        return Response(serializer_get.data)
