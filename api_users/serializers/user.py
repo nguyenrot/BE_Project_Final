@@ -17,6 +17,7 @@ class UserSerializer(serializers.ModelSerializer):
     #     return user.roles.first().name
 
     list_role = serializers.SerializerMethodField()
+    is_active = serializers.BooleanField(read_only=True)
 
     def get_list_role(self, user):
         return get_list_name_roles(user.roles.all())
@@ -24,8 +25,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["id", "name", "email", "phone", "birthday", "address", "place", "avatar", "department", "position",
-                  "roles", "list_role",
-                  "username", "created_at", "updated_at"]
+                  "roles", "list_role", "is_active",
+                                        "username", "created_at", "updated_at"]
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
