@@ -26,7 +26,7 @@ class UserSerializer(serializers.ModelSerializer):
         model = User
         fields = ["id", "name", "email", "phone", "birthday", "address", "place", "avatar", "department", "position",
                   "roles", "list_role", "is_active",
-                                        "username", "created_at", "updated_at"]
+                  "username", "created_at", "updated_at"]
 
 
 class UserRegisterSerializer(serializers.ModelSerializer):
@@ -42,3 +42,8 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         user.roles.add(roles[0])
         user.save()
         return user
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    currentPassword = serializers.CharField(allow_blank=True)
+    newPassword = serializers.CharField(required=True)

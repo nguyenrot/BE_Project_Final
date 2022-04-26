@@ -1,32 +1,21 @@
-from time import time
-from typing import Tuple
-from django.db import transaction
-from api_admin.models import Invite
-from api_users.models import User, LinkingAccount, AuthenticationProvider, Role
-
-# from api_users.serializers import UserSerializer
-from rest_framework.response import Response
-from rest_framework import status
-from utils import get_now
-from api_admin.utils import Util
-from django.conf import settings
+from api_users.models import User, Role
 
 
 class UserService:
-    @classmethod
-    def update(cls, instance, validated_data):
-        roles = ""
-        if "roles" in validated_data:
-            roles = validated_data.pop("roles")
-        User.objects.filter(pk=instance.id).update(**validated_data)
-        if roles:
-            roles_list = []
-            role_id_list = map(lambda t: t.get("id"), roles)
-            roles_list.extend(Role.objects.in_bulk(role_id_list))
-            instance.roles.set(roles_list)
+    @staticmethod
+    def change_valid_password(data, user):
+        curr_pwd = data.get("currentPassword")
+        new_pwd = data.get("newPassword")
+        password_has_been_set = user.has_usable_password()
+        is_correct_password = user.check_password(curr_pwd)
+        if password_has_been_set:
+            if is_correct_password:
+                user.set_password(new_pwd)
+                user.save()
+                return "Đổi mật khẩu thành công!"
+            else:
+                return "Mật khẩu hiện tại sai!"
         else:
-            instance.roles.set([])
-        for attrs, value in validated_data.items():
-            setattr(instance, attrs, value)
-        instance.save()
-        return instance
+            user.set_password(new_pwd)
+            user.save()
+            return "success"

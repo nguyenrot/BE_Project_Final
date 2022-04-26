@@ -1,7 +1,8 @@
 from rest_framework import viewsets
 from api_users.models import User
+from api_users.services import UserService
 from rest_framework.response import Response
-from api_users.serializers import UserSerializer, UserRegisterSerializer
+from api_users.serializers import UserSerializer, UserRegisterSerializer, ChangePasswordSerializer
 from rest_framework import status
 from rest_framework.decorators import action
 
@@ -15,6 +16,7 @@ class UserView(viewsets.ModelViewSet):
         "partial_update": [["admin"], ["super_admin"]],
         "destroy": [["admin"], ["super_admin"]],
         "my_info": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
+        "change_password": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
         "active": [["admin"], ["super_admin"]],
         "de_active": [["admin"], ["super_admin"]],
     }
@@ -25,6 +27,8 @@ class UserView(viewsets.ModelViewSet):
             return UserRegisterSerializer
         if self.action in ("active", "de_active"):
             return None
+        if self.action in ("change_password"):
+            return ChangePasswordSerializer
         return UserSerializer
 
     def create(self, request, *args, **kwargs):
@@ -55,3 +59,15 @@ class UserView(viewsets.ModelViewSet):
         user = request.user
         serializer_get = UserSerializer(user)
         return Response(serializer_get.data)
+
+    @action(detail=False, methods=["PATCH"])
+    def change_password(self, request):
+        serializer = ChangePasswordSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        message = UserService.change_valid_password(
+            serializer.data, request.user)
+        status_code = {
+            "success": status.HTTP_200_OK,
+            "[error] current password incorrect": status.HTTP_406_NOT_ACCEPTABLE,
+        }
+        return Response({"msg": message}, status=status_code.get(message))
