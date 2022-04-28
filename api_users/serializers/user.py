@@ -47,3 +47,16 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 class ChangePasswordSerializer(serializers.Serializer):
     currentPassword = serializers.CharField(allow_blank=True)
     newPassword = serializers.CharField(required=True)
+
+
+class ForgotPasswordSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class TokenSerializer(serializers.Serializer):
+    token = serializers.CharField()
+
+
+class PasswordSerializer(serializers.Serializer):
+    token = serializers.CharField()
+    password = serializers.CharField()

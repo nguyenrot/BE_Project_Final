@@ -95,9 +95,15 @@ SWAGGER_SETTINGS = {
 
 API_HOST = env("API_HOST")
 API_PORT = env("API_PORT")
+HOST = env("HOST")
+POST = env("POST")
 OAUTH_SCHEME = "http" if API_HOST in ["127.0.0.1", "localhost"] else "https"
 OAUTH_PORT = ":" + API_PORT if API_PORT is not None else ""
 OAUTH_URL = OAUTH_SCHEME + "://" + API_HOST + OAUTH_PORT
+
+HOST_SCHEME = "http" if HOST in ["127.0.0.1", "localhost"] else "https"
+HOST_PORT = ":" + POST if POST is not None else ""
+HOST_URL = HOST_SCHEME + "://" + HOST + HOST_PORT
 
 # config oauth2
 PRIVATE_KEY_FILE = env("PRIVATE_KEY_FILE", default="jwt")

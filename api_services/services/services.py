@@ -7,7 +7,6 @@ class Services:
     @classmethod
     def get_services(cls, id_office=None, id_field=None, search=None):
         services = Service.objects.all()
-        print(services)
 
         if len(id_field):
             services = services.filter(field_id=id_field)
