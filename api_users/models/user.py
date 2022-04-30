@@ -24,7 +24,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     birthday = models.DateField(blank=True, null=True)
     address = models.TextField(blank=True, null=True)
     place = models.TextField(blank=True, null=True)
-    avatar = models.ImageField(upload_to='avatar/% Y/% m/% d/% H/% i/% s/', blank=True, null=True)
+    avatar = models.ImageField(upload_to='avatar/%Y/%m/%d/%H/%M/%s/', blank=True, null=True)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -12,7 +12,7 @@ class ServiceComponent(TimeStampedModel):
     original = models.IntegerField(default=0)
     copy = models.IntegerField(default=0)
     note = models.TextField(blank=True, null=True)
-    file_sample = models.FileField(upload_to='samples/% Y/% m/% d/% H/% i/% s/', blank=True, null=True, default=True)
+    file_sample = models.FileField(upload_to='samples/%Y/%m/%d/%H/%M/%s/', blank=True, null=True, default=True)
     service = models.ForeignKey(Service, blank=False, null=False, on_delete=models.CASCADE, related_name="components")
 
     class Meta:
