@@ -11,6 +11,6 @@ class ReceptionRecordDetail(TimeStampedModel):
     )
     reception_record = models.ForeignKey(ReceptionRecord, on_delete=models.CASCADE, null=False, blank=False,
                                          related_name="details")
-    attach = models.FileField(blank=False, null=False)
+    attach = models.FileField(upload_to='records/% Y/% m/% d/% H/% i/% s/', blank=False, null=False)
     service_component = models.ForeignKey(ServiceComponent, on_delete=models.CASCADE, null=False, blank=False,
                                           related_name="record_detail")
