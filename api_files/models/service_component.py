@@ -16,4 +16,4 @@ class ServiceComponent(TimeStampedModel):
     service = models.ForeignKey(Service, blank=False, null=False, on_delete=models.CASCADE, related_name="components")
 
     class Meta:
-        db_table = "files_details"
+        db_table = "service_component"
