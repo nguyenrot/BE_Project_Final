@@ -23,7 +23,8 @@ class ReceptionRecordDetailSerializer(serializers.ModelSerializer):
     file_name = serializers.SerializerMethodField()
 
     def get_file_name(self, instance):
-        return instance.attach.name
+        name = instance.attach.name.split('/')
+        return name.pop()
 
     def get_ingredient(self, instance):
         return instance.service_component.ingredient
