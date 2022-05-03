@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     'api_news',
     'api_files',
     'api_evaluates',
+    'api_statistic',
 ]
 
 MIDDLEWARE = [
