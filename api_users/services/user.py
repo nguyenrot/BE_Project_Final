@@ -12,9 +12,9 @@ class UserService:
             if is_correct_password:
                 user.set_password(new_pwd)
                 user.save()
-                return "Đổi mật khẩu thành công!"
+                return "success"
             else:
-                return "Mật khẩu hiện tại sai!"
+                return "[error] current password incorrect"
         else:
             user.set_password(new_pwd)
             user.save()
