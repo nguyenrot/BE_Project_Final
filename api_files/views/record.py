@@ -31,8 +31,9 @@ class RecordView(viewsets.ModelViewSet):
         "reception": [["admin"], ["super_admin"], ["employee_receive"]],
         "approve": [["admin"], ["super_admin"], ["employee_approve"]],
         "cancel": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
-        "get_record": [["admin"], ["super_admin"], ["employee_receive"]],
-        "get_record_reception": [["admin"], ["super_admin"], ["employee_approve"]],
+        "get_record": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
+        "get_record_not_approve": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
+        "get_record_approved": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
     }
 
     class MyList(list):
@@ -42,7 +43,7 @@ class RecordView(viewsets.ModelViewSet):
     def get_permissions(self):
         if self.action in (
                 "update", "partial_update", "destroy", "reception", "cancel", "approve", "get_record",
-                "get_record_reception"):
+                "get_record_reception", "get_record", "get_record_not_approve", "get_record_approved"):
             self.permission_classes = [TokenHasActionScope]
         if self.action in ("retrieve", "list", "create", "get_record_code"):
             self.permission_classes = []
@@ -55,7 +56,9 @@ class RecordView(viewsets.ModelViewSet):
             return ContentSerializer
         if self.action in ("reception"):
             return ApproveSerializer
-        if self.action in ("get_record", "get_record_code", "get_record_reception"):
+        if self.action in (
+                "get_record", "get_record_code", "get_record_reception", "get_record", "get_record_not_approve",
+                "get_record_approved"):
             return None
         return ReceptionRecordSerializer
 
@@ -218,12 +221,22 @@ class RecordView(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def get_record(self, request):
-        record = ReceptionRecord.objects.filter(status=2)
-        serializer = ReceptionRecordSerializer(record, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        status = request.GET.get("status")
+        record = ReceptionRecord.objects.filter(status=status)
+        paged_queryset = self.paginate_queryset(record)
+        serializer = ReceptionRecordSerializer(paged_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
 
     @action(detail=False, methods=['get'])
-    def get_record_reception(self, request):
-        record = ReceptionRecord.objects.filter(approve__user_assignment=request.user)
-        serializer = ReceptionRecordSerializer(record, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get_record_not_approve(self, request):
+        record = ReceptionRecord.objects.filter(approve__user_assignment=request.user, status=2)
+        paged_queryset = self.paginate_queryset(record)
+        serializer = ReceptionRecordSerializer(paged_queryset, many=True)
+        return self.get_paginated_response(serializer.data)
+
+    @action(detail=False, methods=['get'])
+    def get_record_approved(self, request):
+        record = ReceptionRecord.objects.filter(approve__user_assignment=request.user, status=3)
+        paged_queryset = self.paginate_queryset(record)
+        serializer = ReceptionRecordSerializer(paged_queryset, many=True)
+        return self.get_paginated_response(serializer.data)

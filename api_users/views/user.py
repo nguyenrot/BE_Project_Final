@@ -22,6 +22,7 @@ class UserView(viewsets.ModelViewSet):
         "destroy": [["admin"], ["super_admin"]],
         "my_info": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
         "change_password": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
+        "employee_approve": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
         "active": [["admin"], ["super_admin"]],
         "de_active": [["admin"], ["super_admin"]],
     }
@@ -144,3 +145,15 @@ class UserView(viewsets.ModelViewSet):
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(methods=["get"], detail=False)
+    def employee_approve(self, request):
+        query = User.objects.filter(roles__scope="employee_approve")
+        serializer = UserSerializer(query, many=True)
+        return Response(serializer.data)
+
+    @action(methods=["get"], detail=False)
+    def employee_receive(self, request):
+        query = User.objects.filter(roles__scope="employee_receive")
+        serializer = UserSerializer(query, many=True)
+        return Response(serializer.data)
