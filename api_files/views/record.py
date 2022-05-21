@@ -231,12 +231,12 @@ class RecordView(viewsets.ModelViewSet):
     def get_record_not_approve(self, request):
         record = ReceptionRecord.objects.filter(approve__user_assignment=request.user, status=2)
         paged_queryset = self.paginate_queryset(record)
-        serializer = ReceptionRecordSerializer(paged_queryset, many=True)
-        return self.get_paginated_response(serializer.data)
+        serializer = ReceptionRecordSerializer(record, many=True)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def get_record_approved(self, request):
         record = ReceptionRecord.objects.filter(approve__user_assignment=request.user, status=3)
         paged_queryset = self.paginate_queryset(record)
-        serializer = ReceptionRecordSerializer(paged_queryset, many=True)
-        return self.get_paginated_response(serializer.data)
+        serializer = ReceptionRecordSerializer(record, many=True)
+        return Response(serializer.data)

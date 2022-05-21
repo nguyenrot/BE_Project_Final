@@ -6,7 +6,7 @@ from rest_framework.response import Response
 
 class RoleView(viewsets.ViewSet):
     required_alternate_scopes = {
-        "list": [["admin"], ["super_admin"]],
+        "list": [["admin"], ["super_admin"], ["employee_receive"], ["employee_approve"]],
         "create": [["admin"], ["super_admin"]],
         "retrieve": [["admin"], ["super_admin"]],
         "update": [["admin"], ["super_admin"]],
