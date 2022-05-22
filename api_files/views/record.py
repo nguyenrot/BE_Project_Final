@@ -16,6 +16,7 @@ from api_base.services import SendSms, SendMail
 from utils import MomoPayment
 from rest_framework.decorators import action
 from api_base.pagination import CustomPagination
+from django.conf import settings
 
 
 class RecordView(viewsets.ModelViewSet):
@@ -90,6 +91,8 @@ class RecordView(viewsets.ModelViewSet):
         if not record.service.amount:
             record.status = 1
             record.save()
+            site = settings.HOST_URL
+            url = site + "/" + "tracuuhoso/" + str(record.id)
             body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}'.format(record.service.name, record.code)
             SendSms.send_sms(phone_number=phone_number, body=body)
             mail_data = {
@@ -98,6 +101,7 @@ class RecordView(viewsets.ModelViewSet):
                 "context": {
                     "name": record.name_sender,
                     "body": body,
+                    "link": url,
                     "title": "Dịch vụ công Epoch Making xin thông báo"
                 },
                 "to": [record.email],
@@ -107,6 +111,8 @@ class RecordView(viewsets.ModelViewSet):
         result = view_record_serializer.data
         if record.status == 0:
             result["pay_url"] = MomoPayment.oder_info(record)
+            site = settings.HOST_URL
+            url = site + "/" + "tracuuhoso/" + str(record.id)
             body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}. Hồ sơ này cần phải thanh\
              toán để hoàn tất thủ tục'.format(
                 record.service.name, record.code)
@@ -116,6 +122,7 @@ class RecordView(viewsets.ModelViewSet):
                 "context": {
                     "name": record.name_sender,
                     "body": body,
+                    "link": url,
                     "title": "Dịch vụ công Epoch Making xin thông báo"
                 },
                 "to": [record.email],
@@ -153,6 +160,8 @@ class RecordView(viewsets.ModelViewSet):
         else:
             return Response(serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
+        site = settings.HOST_URL
+        url = site + "/" + "tracuuhoso/" + str(record.id)
         body = 'Mã hồ sơ {0} đã được tiếp nhận thành công.'.format(record.code)
         SendSms.send_sms(phone_number=record.phone_number, body=body)
         mail_data = {
@@ -161,6 +170,7 @@ class RecordView(viewsets.ModelViewSet):
             "context": {
                 "name": record.name_sender,
                 "body": body,
+                "link": url,
                 "title": "Dịch vụ công Epoch Making xin thông báo"
             },
             "to": [record.email],
@@ -174,6 +184,8 @@ class RecordView(viewsets.ModelViewSet):
         record.status = 4
         record.content = request.data.get("content")
         record.save()
+        site = settings.HOST_URL
+        url = site + "/" + "tracuuhoso/" + str(record.id)
         body = 'Mã hồ sơ {0} đã bị hủy.'.format(record.code)
         SendSms.send_sms(phone_number=record.phone_number, body=body)
         mail_data = {
@@ -182,6 +194,7 @@ class RecordView(viewsets.ModelViewSet):
             "context": {
                 "name": record.name_sender,
                 "body": body,
+                "link": url,
                 "title": "Dịch vụ công Epoch Making xin thông báo"
             },
             "to": [record.email],
@@ -203,6 +216,8 @@ class RecordView(viewsets.ModelViewSet):
         record.status = 3
         record.content = request.data.get("content")
         record.save()
+        site = settings.HOST_URL
+        url = site + "/" + "tracuuhoso/" + str(record.id)
         body = 'Mã hồ sơ {0} được duyệt thành công và sẽ sớm được gửi đến địa chỉ {1}.'.format(record.service.name,
                                                                                                record.address)
         SendSms.send_sms(phone_number=record.phone_number, body=body)
@@ -212,6 +227,7 @@ class RecordView(viewsets.ModelViewSet):
             "context": {
                 "name": record.name_sender,
                 "body": body,
+                "link": url,
                 "title": "Dịch vụ công Epoch Making xin thông báo"
             },
             "to": [record.email],

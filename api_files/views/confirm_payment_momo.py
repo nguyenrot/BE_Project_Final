@@ -4,6 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from api_files.models import Payment
 from api_base.services import SendSms, SendMail
+from django.conf import settings
 
 
 class ConfirmPaymentView(viewsets.ViewSet):
@@ -23,6 +24,8 @@ class ConfirmPaymentView(viewsets.ViewSet):
         record = payment.record
         if request_code == 0:
             record.status = 1
+            site = settings.HOST_URL
+            url = site + "/" + "tracuuhoso/" + str(record.id)
             body = 'Bạn đã nộp hồ sơ {0} thành công.Mã hồ sơ của bạn là {1}'.format(record.service.name, record.code)
             SendSms.send_sms(phone_number=record.phone_number, body=body)
             mail_data = {
@@ -31,6 +34,7 @@ class ConfirmPaymentView(viewsets.ViewSet):
                 "context": {
                     "name": record.name_sender,
                     "body": body,
+                    "link": url,
                     "title": "Dịch vụ công Epoch Making xin thông báo"
                 },
                 "to": [record.email],
@@ -38,14 +42,17 @@ class ConfirmPaymentView(viewsets.ViewSet):
             SendMail.send_html_email(mail_data)
         if request_code == 1003:
             record.status = 4
+            site = settings.HOST_URL
+            url = site + "/" + "tracuuhoso/" + str(record.id)
             body = 'Hồ hồ sơ {0}, mã hồ sơ {1} của bạn đã bị hủy do hết thời hạn thanh toán.'.format(
                 record.service.name, record.code)
             mail_data = {
                 "template": "mail_templates/mail_successful_file_registration.html",
-                "subject": "Đăng ký hồ sơ thành công",
+                "subject": "Thông báo hủy hồ sơ",
                 "context": {
                     "name": record.name_sender,
                     "body": body,
+                    "link": url,
                     "title": "Dịch vụ công Epoch Making xin thông báo"
                 },
                 "to": [record.email],
