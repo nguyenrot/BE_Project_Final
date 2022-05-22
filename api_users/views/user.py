@@ -100,14 +100,13 @@ class UserView(viewsets.ModelViewSet):
             token = jwt.encode({'user_id': str(user.id)}, settings.SECRET_KEY, algorithm='HS256')
             site = settings.HOST_URL
             url = site + "/" + "reset_password" + "?token=" + str(token)
-            body = "Link rest password : " + url
             mail_data = {
-                "template": "mail_templates/mail_successful_file_registration.html",
-                "subject": "Đăng ký hồ sơ thành công",
+                "template": "mail_templates/reset_password.html",
+                "subject": "Đặt lại mật khẩu",
                 "context": {
                     "name": user.name,
-                    "body": body,
-                    "title": "Dịch vụ công Epoch Making xin thông báo"
+                    "link": url,
+                    "title": "Đặt lại mật khẩu"
                 },
                 "to": [request.data.get("email")],
             }
